@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Auto trend yt shorts lmao</title>
+    <meta charset="utf-8">
+    <style>
+        @font-face {
+          font-family: yt;
+          src: url(YouTubeSansRegular.otf);
+        }
+        span,p{
+          font-family: system-ui,yt,Roboto, Arial, sans-serif;
+          font-size: 0.60rem;
+          font-weight: 400;
+          vertical-align:text-top;
+          color: #E1E1E1;
+        }
+  			#bg {
+          
+          width: 19.5em;
+          height: 42.2em;
+          background-image: url("IMG_0791.PNG");
+          background-color: #0F0F0F;
+          background-size: 100%;
+        }
+        #comment {
+          
+          opacity: 1;
+          position: relative;
+          top: 43%;
+          width: 19.2em;
+          height: 2em;
+          background-color: #0F0F0F;
+          border: 3px #0F0F0F solid;
+        }
+      
+        #image{
+          position:relative;
+          top:-0.05em;
+          left:0.4em;
+          border-radius: 50%;
+          width: 1.23em;
+          height: 1.23em;
+      
+        }
+
+        #dark{
+          position:relative;
+          left:1.4em;
+          top:-0.7em;
+          
+          font-size: 0.5rem;
+          color: #A7A7A7;
+        }
+
+        #normal{
+          position:absolute;
+          left: 3.65em;
+          top: 1.5em;
+          text-align:left;
+        }
+
+        #imagetwo {
+          position:relative;
+          top: 36.3em;
+          left:0.6em;
+          border-radius: 50%;
+          width: 1.23em;
+          height: 1.23em;
+        }
+    </style>
+  </head>
+  <body>
+  <div id="bg">
+    <div id="comment">
+    
+      <img src="https://yt3.googleusercontent.com/ytc/AIdro_n7vWDtuMWd3tppF0WEYhGIBjtOJKggNWAZVW3LWJCO1Dw=s160-c-k-c0x00ffffff-no-rj" id="image">
+      <span id="dark">@Tulinx • 0sec ago</span>
+      <span id="normal">SKIBIDI</span>
+    </div>
+     <img src="https://yt3.googleusercontent.com/ytc/AIdro_n7vWDtuMWd3tppF0WEYhGIBjtOJKggNWAZVW3LWJCO1Dw=s160-c-k-c0x00ffffff-no-rj" id="imagetwo">
+  </div>
+
+  
+  <div id="info" style="margin-left: 60%;z-index:5;position:absolute;top:0px;">
+  <label for="name">Input your channel name: e.x. @blahblah</label>
+  <input type="text" id="name" name="name">
+  
+  <br>
+  <label for="img">Put your channel pfp here</label>
+  <input type="file" name=img id=img><br>
+
+  <label for="fps">Frames per second:</label>
+  <input type="number" name="fps" id="fps" value=25> 
+  <br>
+
+  <label for="fpw">Frames per word (can be adjusted manually per word)</label>
+  <input type="number" name="fpw" id="fpw" value=6>
+  <br>
+  <label for="text">Input every word in the song you have. If you want to make a phrase, add underscores instead of spaces e.x. hi_besties. If you want one word to have more frames, type it like so: Example[x], with Example being the word and x being the amount of frames. Words are seperated by spaces.<br>Example: I knew you were trouble when you walked in[12] and shame shame_on shame_on_you now.</label>
+  <br>
+	<textarea id="text" name="text" style="width:20em;height:40em"></textarea>
+  <br><br>
+
+  <button type="button" id=go>Start (3 second delay) (Screen record when running)</button>
+  
+  </div>
+  <script>
+
+  
+    images = [];
+    for(var i=806; i < 883; i++){
+      images.push(new Image())
+      images[images.length-1].src = `https://raw.githubusercontent.com/tac0coder/imgsForProject/master/IMG_0${i}.PNG`
+      if(i==810){i++}
+    }
+    function g(a){return document.getElementById(a)}
+
+    words = []
+
+    currentWord = 0
+    wordfc = 0
+    imgNum = 0
+    bg = g("bg")
+    
+    function frame(){
+      bg.style.backgroundImage = `url(${images[imgNum].src})`
+      imgNum++
+      if(imgNum == images.length){
+        imgNum=0
+      }
+
+      g("normal").innerHTML = words[currentWord][0].replaceAll("_"," ")
+      wordfc++
+      if(wordfc == words[currentWord][1]-1){
+        wordfc = 0
+        currentWord++
+      }
+
+      if(currentWord==words.length){
+        currentWord=0
+      }
+    }
+
+
+    document.getElementById("go").onclick = function(){
+      g("dark").innerHTML = `${g("name").value} • 0sec ago`
+      //alert(g("img").value)
+      g("image").src = URL.createObjectURL(g("img").files[0])
+      g("imagetwo").src = URL.createObjectURL(g("img").files[0])
+      for(var w=0; w < g("text").value.split(" ").length; w++){
+        word = g("text").value.split(" ")[w]
+        
+        try{
+        if(word[word.length-3]=="["){
+          words.push([word.slice(0,word.length-3),parseInt(word[word.length-2])])
+        }else if(word[word.length-4]=="["){
+          words.push([word.slice(0,word.length-4),parseInt(word.slice(word.length-3,word.length-1))])
+        }else if(word[word.length-5]=="["){
+          words.push([word.slice(0,word.length-5),parseInt(word.slice(word.length-4,word.length-1))])
+        }else{words.push([word,parseInt(g("fpw").value)])}
+        }catch{
+          words.push([word,parseInt(g("fpw").value)])
+        }
+        
+      }
+
+      setTimeout(function(){
+        setInterval(frame,1000/parseInt(g("fps").value))
+      },3000)
+      
+    }
+  </script>
+  </body>
+</html>
