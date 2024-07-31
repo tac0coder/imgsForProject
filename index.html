@@ -125,7 +125,7 @@
     bg = g("bg")
     
     g("stop").onclick = function(){
-      if(thread != false && !g("go").disabled){
+      if(thread != false && g("go").disabled){
         clearInterval(thread)
         currentWord = 0
         wordfc = 0
