@@ -125,12 +125,12 @@
     bg = g("bg")
     
     g("stop").onclick = function(){
-      if(thread != false){
+      if(thread != false && !g("go").disabled){
         clearInterval(thread)
         currentWord = 0
         wordfc = 0
         imgNum = 0
-    
+    	g("go").disabled = false;
       }
     }
 
@@ -155,6 +155,7 @@
 
 
     document.getElementById("go").onclick = function(){
+g("go").disabled = true
       g("dark").innerHTML = `${g("name").value} • 0sec ago`
       //alert(g("img").value)
       g("image").src = URL.createObjectURL(g("img").files[0])
