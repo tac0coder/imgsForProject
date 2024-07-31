@@ -103,7 +103,7 @@
   <br><br>
 
   <button type="button" id=go>Start (3 second delay) (Screen record when running)</button>
-  
+  <br><button type="button" id=stop>Stop</button>
   </div>
   <script>
 
@@ -118,11 +118,22 @@
 
     words = []
 
+    thread = false
     currentWord = 0
     wordfc = 0
     imgNum = 0
     bg = g("bg")
     
+    g("stop").onclick = function(){
+      if(thread != false){
+        clearInterval(thread)
+        currentWord = 0
+        wordfc = 0
+        imgNum = 0
+    
+      }
+    }
+
     function frame(){
       bg.style.backgroundImage = `url(${images[imgNum].src})`
       imgNum++
@@ -148,6 +159,7 @@
       //alert(g("img").value)
       g("image").src = URL.createObjectURL(g("img").files[0])
       g("imagetwo").src = URL.createObjectURL(g("img").files[0])
+      words = []
       for(var w=0; w < g("text").value.split(" ").length; w++){
         word = g("text").value.split(" ")[w]
         
@@ -166,7 +178,7 @@
       }
 
       setTimeout(function(){
-        setInterval(frame,1000/parseInt(g("fps").value))
+        thread = setInterval(frame,1000/parseInt(g("fps").value))
       },3000)
       
     }
