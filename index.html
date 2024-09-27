@@ -7,7 +7,7 @@
 
         span,p{
           font-family: system-ui,Roboto, Arial, sans-serif;
-          font-size: 0.65em;
+          font-size: 0.7em;
           font-weight: 400;
           vertical-align:text-top;
           color: #E1E1E1;
@@ -52,7 +52,7 @@
 
         #normal{
           position:absolute;
-          left: 3.5em;
+          left: 3.3em;
           top: 1.4em;
           text-align:left;
         }
@@ -90,15 +90,23 @@
   <label for="fps">Frames per second:</label>
   <input type="number" name="fps" id="fps" value=25> 
   <br>
-
-  <label for="fpw">Frames per word (can be adjusted manually per word)</label>
-  <input type="number" name="fpw" id="fpw" value=6>
-  <br>
-  <label for="text">Input every word in the song you have. If you want to make a phrase, add underscores instead of spaces e.x. hi_besties. If you want one word to have more frames, type it like so: Example[x], with Example being the word and x being the amount of frames. Words are seperated by spaces.<br>Example: I knew you were trouble when you walked in[12] and shame shame_on shame_on_you now.</label>
-  <br>
-	<textarea id="text" name="text" style="width:20em;height:40em"></textarea>
-  <br><br>
-
+  <select id="auto" value="manu">
+    <option value="manu" name="manu">Manual</option>
+    <option value="auto" name="auto">Automatic (beta)</option>
+    
+  </select>
+  <div id="manual">
+    <label for="fpw">Frames per word (can be adjusted manually per word)</label>
+    <input type="number" name="fpw" id="fpw" value=6>
+    <br>
+    <label for="text">Input every word in the song you have. If you want to make a phrase, add underscores instead of spaces e.x. hi_besties. If you want one word to have more frames, type it like so: Example[x], with Example being the word and x being the amount of frames. Words are seperated by spaces.<br>Example: I knew you were trouble when you walked in[12] and shame shame_on shame_on_you now.</label>
+    <br>
+	  <textarea id="text" name="text" style="width:20em;height:40em"></textarea>
+    <br><br>
+  </div>
+  <div id="automatic" style="display:none">
+    <label for=keywords>Song title</label><input type="text" id="keywords" name="keywords">
+  </div>
   <button type="button" id=go>Start (3 second delay) (Screen record when running)</button>
   <br><button type="button" id=stop>Stop</button>
   </div>
@@ -112,7 +120,16 @@
       if(i==810){i++}
     }
     function g(a){return document.getElementById(a)}
-
+    g("auto").onchange = function(){
+      
+      if(g("auto").value == "manu"){
+        g("automatic").style.display = "none";
+        g("manual").style.display = "";
+      }else{
+        g("automatic").style.display = "";
+        g("manual").style.display = "none";
+      }
+    }
     words = []
 
     thread = false
@@ -151,12 +168,42 @@
     }
 
 
-    document.getElementById("go").onclick = function(){
+    document.getElementById("go").onclick = async function(){
 g("go").disabled = true
       g("dark").innerHTML = `${g("name").value} • 0sec ago`
       //alert(g("img").value)
       g("image").src = URL.createObjectURL(g("img").files[0])
       g("imagetwo").src = URL.createObjectURL(g("img").files[0])
+      if(g("auto").value=="auto"){
+        keywords = g("keywords").value
+        songreq = await fetch("https://music.xianqiao.wang/neteaseapiv2/search?limit=1&type=1&keywords="+keywords)
+        song = await songreq.json()
+        lyricsreq = await fetch("https://music.xianqiao.wang/neteaseapiv2/lyric?id="+song["result"]["songs"][0]["id"])
+        lyrics = await lyricsreq.json()
+        lyrics = lyrics["lrc"]["lyric"]
+        lyrics = lyrics.split("\n")
+        lyriclist = []
+        for(i in lyrics){
+          ts = lyrics[i].slice(0,10)
+          
+          lyriclist.push([[parseInt(ts.slice(1,3)),parseInt(ts.slice(4,6)),parseInt(ts.slice(7,10))],lyrics[i].slice(11)])
+        }
+        last = 0
+        fps = 1000/parseInt(g("fps").value)
+        for(i in lyriclist){
+          timestamp = (lyriclist[i][0][0]*60000)+(lyriclist[i][0][1]*1000)+lyriclist[i][0][2]
+          lyriclist[i].push(timestamp - last)
+          last = timestamp
+          splitlyric = lyriclist[i][1].split(" ")
+          for(a in splitlyric){
+            mathing = Math.floor((lyriclist[i][2]/splitlyric.length)/fps)
+            if(mathing > 0){
+            g("text").value += splitlyric[a] + `[${mathing}] `
+          }
+          }
+        }
+        
+      }
       words = []
       for(var w=0; w < g("text").value.split(" ").length; w++){
         word = g("text").value.split(" ")[w]
