@@ -186,7 +186,7 @@ g("go").disabled = true
         lyriclist = []
         for(i in lyrics){
           ts = lyrics[i].slice(0,10)
-          if(!containCredits(lyrics[i].slice(10))){
+          if(true){
             lyriclist.push([[parseInt(ts.slice(1,3)),parseInt(ts.slice(4,6)),parseInt(ts.slice(7,10))],lyrics[i].slice(10).replace("]","")])
           }
         }
